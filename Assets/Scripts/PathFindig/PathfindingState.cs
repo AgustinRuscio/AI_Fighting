@@ -1,11 +1,9 @@
-//--------------------------------------------
-//          Agustin Ruscio & Merdeces Riego
-//--------------------------------------------
+//-------------------------
+//          Agustin Ruscio
+//-------------------------
 
 
 using System.Collections.Generic;
-using System.IO;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PathfindingState : States
@@ -34,10 +32,11 @@ public class PathfindingState : States
         _viewRadius = _agent._viewRadius;
     }
 
-    public PathfindingState SetLayers(LayerMask nodeMask, LayerMask obstacles)
+    public PathfindingState SetLayers(LayerMask nodeMask, LayerMask obstacles, LayerMask enemyLayer)
     {
         _nodeLayer = nodeMask;
         _obstacleMask = obstacles;
+        _enemyMask = enemyLayer;
         return this;
     }
 
@@ -45,6 +44,8 @@ public class PathfindingState : States
 
     public override void OnStart(params object[] parameters)
     {
+        Debug.Log(_agent.name + " Entro al pathFinding");
+
         _parameterPos = (Vector3)parameters[0];
 
         goalNode = GetNode(_parameterPos);
@@ -89,9 +90,12 @@ public class PathfindingState : States
 
     public override void Update()
     {
-
-        if (Tools.FieldOfView(_agent.transform.position, _agent.transform.forward, _agent.GetClosestEnemy(), _agent._viewRadius, _agent._viewAngle, _enemyMask))
-            finiteStateMach.ChangeState(StatesEnum.Fight);
+        if (_agent.GetClosestEnemy() != Vector3.zero)
+        {
+            if (Tools.FieldOfView(_agent.transform.position, _agent.transform.forward, _agent.GetClosestEnemy(), _agent._viewRadius, _agent._viewAngle, _enemyMask))
+                finiteStateMach.ChangeState(StatesEnum.Fight, _agent.GetCurrentEnemy());
+        }
+        
 
         if (Tools.InLineOfSight(_agent.transform.position, goalNode.transform.position, _obstacleMask))
             finiteStateMach.ChangeState(StatesEnum.GoToLocation, _parameterPos);
@@ -206,5 +210,5 @@ public class PathfindingState : States
 
     private float Heuristic(Node start, Node End) => (End.transform.position - start.transform.position).sqrMagnitude;
     
-    public override void OnStop() { }
+    public override void OnStop() { Debug.Log(_agent.name + " Salio del pathFinding"); }
 }

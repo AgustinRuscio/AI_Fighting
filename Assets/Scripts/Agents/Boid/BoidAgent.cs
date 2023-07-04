@@ -13,9 +13,8 @@ public class BoidAgent : AiAgent, IBoid
     {
         AddBoidToHash();
 
-        //_fsm.AddState(StatesEnum.GoToLocation, new GoToLocationState().SetAgent(this).SetObstacleLayer(_obstaclesMask));
         //_fsm.AddState(StatesEnum.LeaderFollowing, new LeadFollowState().SetObstacleLayer(_obstaclesMask).SetLeaderTransform(_leaderTransform).SetAget(this));
-        //_fsm.AddState(StatesEnum.PathFinding, new PathfindingState(this).SetLayers(_nodeMask,_obstaclesMask));
+        //_fsm.AddState(StatesEnum.PathFinding, new PathfindingState(this).SetLayers(_nodeMask, _obstaclesMask));
     }
 
     override protected void Update()
@@ -24,7 +23,7 @@ public class BoidAgent : AiAgent, IBoid
 
         //_fsm.Update();
         ApplyForce(LeaderFollowing(_leaderTransform.position, GameManager.instance.allBoids));
-        ObstacleAvoidanceLogic();
+        ObstacleAvoidanceLogic() ;
     }
 
     public void AddBoidToHash()=> GameManager.instance.AddBoid(this);

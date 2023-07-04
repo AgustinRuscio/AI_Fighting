@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class Leader : AiAgent
 {
-    [SerializeField]
-    private TeamEnum _team;
-
     private void Start()
     {
-        _fsm.AddState(StatesEnum.Idle, new IdleState().SetAgent(this).SetLayer(_enemiesMask));
-        _fsm.AddState(StatesEnum.GoToLocation, new GoToLocationState().SetAgent(this).SetObstacleLayer(_obstaclesMask));
-        _fsm.AddState(StatesEnum.PathFinding, new PathfindingState(this).SetLayers(_nodeMask,_obstaclesMask));
+        _fsm.AddState(StatesEnum.Idle, new IdleState().SetAgent(this, transform).SetLayer(_enemiesMask));
+        _fsm.AddState(StatesEnum.GoToLocation, new GoToLocationState().SetAgent(this).SetLayers(_wallMask, _enemiesMask));
+        _fsm.AddState(StatesEnum.PathFinding, new PathfindingState(this).SetLayers(_nodeMask,_wallMask, _enemiesMask));
+        _fsm.AddState(StatesEnum.Fight, new FightState().SetAgent(this).SetLayers(_enemiesMask));
+        _fsm.AddState(StatesEnum.Escape, new EscapeState().SetAgent(this).SetLayer(_wallMask));
     }
 
     protected override void Update()
@@ -22,7 +21,7 @@ public class Leader : AiAgent
 
         ObstacleAvoidanceLogic();
 
-        if (Input.GetMouseButtonDown(0) && _team == TeamEnum.RedTeam)
+        if (Input.GetMouseButtonDown(0) && IsAlive() &&_team == TeamEnum.RedTeam)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -34,7 +33,7 @@ public class Leader : AiAgent
             }
         }
 
-        if (Input.GetMouseButtonDown(1) && _team == TeamEnum.BlueTeam)
+        if (Input.GetMouseButtonDown(1) && IsAlive() && _team == TeamEnum.BlueTeam)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;

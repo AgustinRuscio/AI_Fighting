@@ -10,10 +10,10 @@ public class IdleState : States
 
     private LayerMask _enemyMask;
 
-    public IdleState SetAgent(AiAgent agent)
+    public IdleState SetAgent(AiAgent agent, Transform transform)
     {
         _agent = agent;
-        _agentTransform = agent.transform;
+        _agentTransform = transform;
 
         return this;
     }
@@ -26,14 +26,21 @@ public class IdleState : States
 
     public override void OnStart(params object[] parameters)
     {
-        Debug.Log("Idle");
-
+        Debug.Log(_agent.name + " Entro al Idle");
         _agent.StopMovement();
-
-        if (Tools.FieldOfView(_agentTransform.position, _agentTransform.forward, _agent.GetClosestEnemy(), _agent._viewRadius, _agent._viewAngle, _enemyMask))
-                finiteStateMach.ChangeState(StatesEnum.Fight, _agent.GetClosestEnemy());
     }
 
-    public override void OnStop() { }
-    public override void Update() { }
+    public override void OnStop()
+    {
+        Debug.Log(_agent.name + " salio del Idle");
+    }
+
+    public override void Update() 
+    {
+        if (_agent.GetClosestEnemy() != Vector3.zero)
+        {
+            if (Tools.FieldOfView(_agentTransform.position, _agentTransform.forward, _agent.GetClosestEnemy(), _agent._viewRadius, _agent._viewAngle, _enemyMask))
+                finiteStateMach.ChangeState(StatesEnum.Fight, _agent.GetCurrentEnemy());
+        }
+    }
 }

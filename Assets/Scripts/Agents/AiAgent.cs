@@ -1,13 +1,11 @@
 //--------------------------------------------
-//          Agustin Ruscio & Merdeces Riego
+//          Agustin Ruscio
 //--------------------------------------------
 
 
 using UnityEngine;
-using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using Unity.VisualScripting;
+using UnityEngine.UI;
 
 public abstract class AiAgent : MonoBehaviour
 {
@@ -16,18 +14,34 @@ public abstract class AiAgent : MonoBehaviour
 
     protected FiniteStateMachine _fsm = new FiniteStateMachine();
 
+    [SerializeField]
+    private Animator _animator;
+
+    public AgentView _viewComponent;
+
+    [SerializeField]
+    protected TeamEnum _team;
+
     [Header("Fight Atributs")]
 
     [SerializeField]
     protected float _life;
 
-    [SerializeField]
-    protected float _damage;
-
-    [SerializeField]
     protected float _coolDown;
 
-    private GenericTimer _timer;
+    private bool _alive = true;
+
+    private bool _injured = true;
+
+    [SerializeField]
+    private Slider _healthBar;
+
+    [SerializeField]
+    private GameObject _punchArea;
+
+    public GenericTimer _timer;
+
+    private AiAgent _currentEnemy;
 
     //-----Atributs
     protected Vector3 _velocity;
@@ -45,7 +59,7 @@ public abstract class AiAgent : MonoBehaviour
     protected LayerMask _nodeMask;
 
     [SerializeField]
-    protected LayerMask _obstaclesMask;
+    protected LayerMask _wallMask;
 
     [SerializeField]
     protected LayerMask _enemiesMask;
@@ -55,6 +69,9 @@ public abstract class AiAgent : MonoBehaviour
     [HideInInspector]
     public float _viewAngle = 90;
 
+    [SerializeField]
+    private float _obstacleAvoidanceMultiplayer;
+
     [Header("Flocking")]
 
     [SerializeField]
@@ -62,6 +79,9 @@ public abstract class AiAgent : MonoBehaviour
 
     [SerializeField]
     protected float _arriveRadius;
+
+    [SerializeField]
+    private float _separationMultiplayer;
 
     [SerializeField]
     protected Vector3 _offset;
@@ -75,16 +95,23 @@ public abstract class AiAgent : MonoBehaviour
     protected LayerMask _avoidanceMask;
 
 
-    private void Awake() => _timer = new GenericTimer(_coolDown);
+    private void Awake()
+    {
+        _coolDown = Random.Range(1.5f, 4);
+
+        _timer = new GenericTimer(_coolDown);
+        _viewComponent = new AgentView(_animator, _healthBar);
+
+        _viewComponent.UpdateHud(_life);
+    }
     
 
     protected virtual void Update() 
     {
         Move();
         _timer.RunTimer();
+        _viewComponent.Movement(_velocity.magnitude);
     }
-    
-    
 
     #region STEERING_BEHAVIOR
 
@@ -141,7 +168,12 @@ public abstract class AiAgent : MonoBehaviour
     }
     public Vector3 LeaderFollowing(Vector3 leaderPosition, HashSet<IBoid> boids)
     {
-        Vector3 separationForce = Separation(boids);
+        float dist = Vector3.Distance(transform.position, leaderPosition);
+
+        if (dist > _arriveRadius)
+            return Seek(leaderPosition);
+
+        Vector3 separationForce = Separation(boids) * _separationMultiplayer;
         Vector3 arriveForce = Arrive(leaderPosition + _offset);
 
         Vector3 desiredVelocity = separationForce + arriveForce;
@@ -163,57 +195,117 @@ public abstract class AiAgent : MonoBehaviour
         _velocity = Vector3.ClampMagnitude(_velocity + force, _speed);
     }
 
-    public void StopMovement()
-    {
-        _velocity = Vector3.zero;
-    }
+    public void StopMovement() => _velocity = Vector3.zero;
+
+    public Vector3 InvertDirection() => -_velocity;
+    
 
     #endregion
+
+    public bool IsAlive() => _alive;
+    public void TakeDamage(float damage)
+    {
+        _life -= damage;
+
+        _viewComponent.UpdateHud(_life);
+
+        if (_life <= 20)
+            InjuredMode();
+
+        if(_life <= 0)
+            Death();
+
+        if(_fsm.CurrentState() != StatesEnum.Fight && _fsm.CurrentState() != StatesEnum.Escape)
+        {
+            GetClosestEnemy();
+            _fsm.ChangeState(StatesEnum.Fight, GetCurrentEnemy());
+        }
+    }
+
+    private void InjuredMode()
+    {
+        _injured = true;
+        _viewComponent.InjuredMode(_injured);
+
+        _fsm.ChangeState(StatesEnum.Escape);
+    }
+
+    public void OnPunch()
+    {
+        _punchArea.SetActive(true);
+    }
+
+    public void OffPunch()
+    {
+        _punchArea.SetActive(false);
+    }
+
+    public void Death()
+    {
+        _alive = false;
+        _viewComponent.Death();
+    }
+
+    public float GetLife() => _life;
 
     protected void ObstacleAvoidanceLogic()
     {
         if (Physics.Raycast((transform.position + new Vector3(0, 1, 0)) + transform.right / 2, transform.forward, _avoidanceRadius, _avoidanceMask))
         {
-            ApplyForce(CalculateSteering(-transform.right * _speed));
+            ApplyForce(CalculateSteering(-transform.right * _speed) * _obstacleAvoidanceMultiplayer);
             //Debug.Log("Obstacle R");
         }
         else if (Physics.Raycast((transform.position + Vector3.up) - transform.right / 2, transform.forward, _avoidanceRadius, _avoidanceMask))
         {
-            ApplyForce(CalculateSteering(transform.right * _speed));
+            ApplyForce(CalculateSteering(transform.right * _speed) * _obstacleAvoidanceMultiplayer);
             //Debug.Log("Obstacle L");
         }
             //Debug.Log("No Obstacle");
     }
 
+    public TeamEnum GetTeam() => _team;
+
     public Vector3 GetClosestEnemy()
     {
-        List<Collider> list = new List<Collider>();
-        Collider[] enemies = Physics.OverlapSphere(transform.position, _viewRadius);
+        Collider[] enemies = Physics.OverlapSphere(transform.position, _viewRadius, _enemiesMask);
 
-        for (int i = 0; i < enemies.Length; i++)
-        {
-            if (enemies[i] == transform.gameObject.GetComponent<Collider>()) continue;
-
-            list.Add(enemies[i]);
-        }
-
-        if(list.Count == 0)
-            return Vector3.zero;
+        if(enemies.Length == 0 ) return Vector3.zero;
 
         float dist = 90000;
 
         Vector3 closestEnemy = Vector3.zero;
 
-        for (int i = 0; i < list.Count; i++)
+        for (int i = 0; i < enemies.Length; i++)
         {
-            Vector3 currentEnemy = list[i].gameObject.GetComponent<Transform>().position;
+            if (enemies[i] == transform.gameObject.GetComponent<Collider>()) continue;
 
-            if (Vector3.Distance(transform.position, currentEnemy) < dist)
-                closestEnemy = currentEnemy;
+            if (!Tools.InLineOfSight(transform.position, enemies[i].transform.position, _wallMask)) continue;
+
+            var currentCheck = enemies[i].gameObject.GetComponent<AiAgent>();
+
+            if (currentCheck ==  null) continue;
+            
+            if(!currentCheck.IsAlive()) continue;
+
+            TeamEnum check = currentCheck.GetTeam();
+
+            if (check == _team) continue;
+
+            if (Vector3.Distance(transform.position, enemies[i].transform.position) < dist)
+            {
+                closestEnemy = enemies[i].transform.position;
+                dist = closestEnemy.magnitude;
+                _currentEnemy = currentCheck;
+            }
         }
+
+         if(closestEnemy == Vector3.zero) return Vector3.zero;
 
         return closestEnemy;
     }
+
+    public AiAgent GetCurrentEnemy() => _currentEnemy;
+    
 
     #region DrawGizmos
     Vector3 DirFromAngel(float angleInDegrees) => new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
