@@ -40,7 +40,7 @@ public class IdleState : States
         if (_agent.GetClosestEnemy() != Vector3.zero)
         {
             if (Tools.FieldOfView(_agentTransform.position, _agentTransform.forward, _agent.GetClosestEnemy(), _agent._viewRadius, _agent._viewAngle, _enemyMask))
-                finiteStateMach.ChangeState(StatesEnum.Fight, _agent.GetCurrentEnemy());
+                finiteStateMach.ChangeState(StatesEnum.Fight, _agent.GetCurrentEnemy(), true);
         }
     }
 }

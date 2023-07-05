@@ -59,7 +59,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd8792bed4b9c0c498cf62f47eabfdef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 25
   _aiAgent: {fileID: 1294695153}
 --- !u!54 &193588953
 Rigidbody:
@@ -2560,6 +2559,7 @@ MonoBehaviour:
   GizmosActivated: 1
   _animator: {fileID: 1709032321}
   _team: 0
+  _isLeader: 1
   _life: 100
   _healthBar: {fileID: 1623768265920954410}
   _punchArea: {fileID: 1968917194}

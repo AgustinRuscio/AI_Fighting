@@ -5,19 +5,22 @@ using UnityEngine;
 public class LeadFollowState : States
 {
     private AiAgent _agent;
+    private BoidAgent _boideAgent;
 
-    private Transform _leaderPosition;
+    private Vector3 _leaderPosition;
+
     private LayerMask _obstacleLayer;
     private LayerMask _enemyMask;
 
-    public LeadFollowState SetAget(AiAgent agent)
+    public LeadFollowState SetAget(AiAgent agent,BoidAgent boid)
     {
         _agent = agent;
+        _boideAgent = boid;
         return this;
     }
     public LeadFollowState SetLeaderTransform(Transform leaderPosition)
     {
-        _leaderPosition = leaderPosition;
+        //_leaderPosition = leaderPosition.position;
         return this;
     }
     public LeadFollowState SetLayers(LayerMask obstacleLayer, LayerMask enemyLayer)
@@ -31,12 +34,8 @@ public class LeadFollowState : States
     public override void OnStart(params object[] parameters)
     {
         Debug.Log("Estado LeadFollow");
-        Debug.Log(_agent.name + " Agente");
-        Debug.Log(_obstacleLayer.ToString() + " Mask");
-        Debug.Log(_leaderPosition.position + " Leaderpos");
 
-        if (!Tools.InLineOfSight(_agent.transform.position, _leaderPosition.position, _obstacleLayer))
-            finiteStateMach.ChangeState(StatesEnum.PathFinding, _leaderPosition.position);
+        _leaderPosition = _boideAgent.GetLeaderPosition();
     }
 
     public override void OnStop()
@@ -47,12 +46,27 @@ public class LeadFollowState : States
 
     public override void Update()
     {
-        if (Tools.FieldOfView(_agent.transform.position, _agent.transform.forward, _agent.GetClosestEnemy(), _agent._viewRadius, _agent._viewAngle, _enemyMask))
-            finiteStateMach.ChangeState(StatesEnum.Fight, _agent.GetCurrentEnemy());
+        if(Vector3.Distance(_leaderPosition, _boideAgent.GetLeaderPosition()) > 3)
+            _leaderPosition = _boideAgent.GetLeaderPosition();
 
-        if (!Tools.InLineOfSight(_agent.transform.position, _leaderPosition.position, _obstacleLayer))
-           finiteStateMach.ChangeState(StatesEnum.PathFinding, _leaderPosition.position);
+        if (_agent.GetClosestEnemy() != Vector3.zero)
+        {
+            if (Tools.FieldOfView(_agent.transform.position, _agent.transform.forward, _agent.GetClosestEnemy(), _agent._viewRadius, _agent._viewAngle, _enemyMask))
+                finiteStateMach.ChangeState(StatesEnum.Fight, _agent.GetCurrentEnemy(), false);
+        }
 
-        _agent.ApplyForce(_agent.LeaderFollowing(_leaderPosition.position, GameManager.instance.allBoids));
+        if (!Tools.InLineOfSight(_agent.transform.position, _leaderPosition, _obstacleLayer))
+            finiteStateMach.ChangeState(StatesEnum.PathFinding, _leaderPosition, false);
+
+
+        if (Vector3.Distance(_agent.transform.position, _leaderPosition) < 3)
+        {
+            Debug.Log("Im too close");
+            _agent.StopMovement();
+        }
+        else
+            _agent.ApplyForce(_agent.LeaderFollowing(_leaderPosition, GameManager.instance.allBoids));
+
+            _agent.ApplyForce(_agent.Separation(GameManager.instance.allBoids));
     }
 }

@@ -24,6 +24,8 @@ public class PathfindingState : States
 
     private Vector3 _parameterPos;
 
+    private bool _isLeader;
+
     #region Builder
 
     public PathfindingState(AiAgent agent)
@@ -45,6 +47,8 @@ public class PathfindingState : States
     public override void OnStart(params object[] parameters)
     {
         Debug.Log(_agent.name + " Entro al pathFinding");
+
+        _isLeader = (bool)parameters[1];
 
         _parameterPos = (Vector3)parameters[0];
 
@@ -93,11 +97,11 @@ public class PathfindingState : States
         if (_agent.GetClosestEnemy() != Vector3.zero)
         {
             if (Tools.FieldOfView(_agent.transform.position, _agent.transform.forward, _agent.GetClosestEnemy(), _agent._viewRadius, _agent._viewAngle, _enemyMask))
-                finiteStateMach.ChangeState(StatesEnum.Fight, _agent.GetCurrentEnemy());
+                finiteStateMach.ChangeState(StatesEnum.Fight, _agent.GetCurrentEnemy(), _isLeader);
         }
         
 
-        if (Tools.InLineOfSight(_agent.transform.position, goalNode.transform.position, _obstacleMask))
+        if (Tools.InLineOfSight(_agent.transform.position, goalNode.transform.position, _obstacleMask) && _isLeader)
             finiteStateMach.ChangeState(StatesEnum.GoToLocation, _parameterPos);
 
         if (_path.Count > 0)
@@ -117,7 +121,13 @@ public class PathfindingState : States
             }
         }
         else
-            finiteStateMach.ChangeState(StatesEnum.Idle);
+        {
+            if(_isLeader)
+                finiteStateMach.ChangeState(StatesEnum.Idle);
+            else
+                finiteStateMach.ChangeState(StatesEnum.GoToLocation);
+
+        }
     }
 
     private void MovethroughNodes()

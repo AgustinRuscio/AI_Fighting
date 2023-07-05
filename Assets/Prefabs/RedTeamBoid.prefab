@@ -605,7 +605,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd8792bed4b9c0c498cf62f47eabfdef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 15
   _aiAgent: {fileID: 6437493206597466747}
 --- !u!54 &4347839854262446027
 Rigidbody:
@@ -769,7 +768,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 40a0a4e22c5dde244aeb2fc8571c5b20, type: 2}
+  - {fileID: 2100000, guid: f28bbf9568ff2f5479525e31dadcee4a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2048,7 +2047,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6437493206597466725
 Transform:
   m_ObjectHideFlags: 0
@@ -2088,13 +2087,12 @@ MonoBehaviour:
   GizmosActivated: 1
   _animator: {fileID: 5805405827925121996}
   _team: 0
+  _isLeader: 0
   _life: 100
-  _coolDown: 2
-  alive: 0
   _healthBar: {fileID: 8258713829504058266}
   _punchArea: {fileID: 2303351284980255699}
-  _maxForce: 5.5
-  _speed: 11.04
+  _maxForce: 5
+  _speed: 5.5
   _nodeMask:
     serializedVersion: 2
     m_Bits: 512
@@ -2108,9 +2106,9 @@ MonoBehaviour:
   _viewAngle: 90
   _obstacleAvoidanceMultiplayer: 4
   _separationRadius: 1
-  _arriveRadius: 5.68
-  _separationMultiplayer: 4
-  _offset: {x: 2, y: 0, z: 2}
+  _arriveRadius: 5.5
+  _separationMultiplayer: 2
+  _offset: {x: 1, y: 0, z: 1}
   _avoidanceRadius: 4
   _avoidanceMask:
     serializedVersion: 2
@@ -2620,7 +2618,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 40a0a4e22c5dde244aeb2fc8571c5b20, type: 2}
+  - {fileID: 2100000, guid: f28bbf9568ff2f5479525e31dadcee4a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

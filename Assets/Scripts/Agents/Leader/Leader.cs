@@ -19,8 +19,6 @@ public class Leader : AiAgent
 
         _fsm.Update();
 
-        ObstacleAvoidanceLogic();
-
         if (Input.GetMouseButtonDown(0) && IsAlive() &&_team == TeamEnum.RedTeam)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

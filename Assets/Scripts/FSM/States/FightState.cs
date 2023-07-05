@@ -10,6 +10,8 @@ public class FightState : States
 
     private LayerMask _enemyMask;
 
+    private bool _isLeader;
+
     public FightState SetAgent(AiAgent agent)
     {
         _agent = agent;
@@ -25,6 +27,8 @@ public class FightState : States
     public override void OnStart(params object[] parameters)
     {
         Debug.Log(_agent.name + " Entro a fight");
+
+        _isLeader = (bool)parameters[1];
 
         _agent._viewComponent.FightMode(true);
         _enemy = (AiAgent)parameters[0];
@@ -47,17 +51,25 @@ public class FightState : States
             _agent.transform.forward = _enemy.transform.position - _agent.transform.position;
 
             if (_agent._timer.CheckCoolDown())
-            {
                 _agent._viewComponent.Punch();
-            }
+            
         }
 
 
         if (!_enemy.IsAlive())
+        {
+            if(_isLeader)
             finiteStateMach.ChangeState(StatesEnum.Idle);
+            else
+            finiteStateMach.ChangeState(StatesEnum.GoToLocation);
+        }
 
         if (!Tools.FieldOfView(_agent.transform.position, _agent.transform.forward, _agent.GetClosestEnemy(), _agent._viewRadius, _agent._viewAngle, _enemyMask))
-            finiteStateMach.ChangeState(StatesEnum.Idle);
-
+        {
+            if (_isLeader)
+                finiteStateMach.ChangeState(StatesEnum.Idle);
+            else
+                finiteStateMach.ChangeState(StatesEnum.GoToLocation);
+        }
     }
 }

@@ -10,6 +10,8 @@ public class EscapeState : States
 
     private Vector3 _escapeDirection;
 
+    private bool _isLeader;
+
     public EscapeState SetAgent(AiAgent agent)
     {
         _agent = agent;
@@ -24,6 +26,8 @@ public class EscapeState : States
 
     public override void OnStart(params object[] parameters)
     {
+        _isLeader = (bool)parameters[0];
+
         Debug.Log(_agent.name + "Entro en Escape");
         _escapeDirection = new Vector3(Random.Range(-36, 21), 0, Random.Range(-35, 22));
     }
@@ -36,11 +40,16 @@ public class EscapeState : States
     public override void Update()
     {
         if (!Tools.InLineOfSight(_agent.transform.position, _escapeDirection, _obstacleMask))
-            finiteStateMach.ChangeState(StatesEnum.PathFinding, _escapeDirection);
+            finiteStateMach.ChangeState(StatesEnum.PathFinding, _escapeDirection, _isLeader);
         
         _agent.ApplyForce(_agent.Seek(_escapeDirection));
 
         if(Vector3.Distance(_agent.transform.position, _escapeDirection) <= 1)
-            finiteStateMach.ChangeState(StatesEnum.Idle);
+        {
+            if (_isLeader)
+                finiteStateMach.ChangeState(StatesEnum.Idle);
+            else
+                finiteStateMach.ChangeState(StatesEnum.GoToLocation);
+        }
     }
 }

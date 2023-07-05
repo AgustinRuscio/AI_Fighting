@@ -1,6 +1,6 @@
-//--------------------------------------------
+//-------------------------
 //          Agustin Ruscio
-//--------------------------------------------
+//-------------------------
 
 
 using UnityEngine;
@@ -21,6 +21,9 @@ public abstract class AiAgent : MonoBehaviour
 
     [SerializeField]
     protected TeamEnum _team;
+
+    [SerializeField]
+    private bool _isLeader;
 
     [Header("Fight Atributs")]
 
@@ -110,6 +113,7 @@ public abstract class AiAgent : MonoBehaviour
     {
         Move();
         _timer.RunTimer();
+        ObstacleAvoidanceLogic();
         _viewComponent.Movement(_velocity.magnitude);
     }
 
@@ -148,7 +152,7 @@ public abstract class AiAgent : MonoBehaviour
         return desired;
     }
 
-    private Vector3 Separation(HashSet<IBoid> boids)
+    public Vector3 Separation(HashSet<IBoid> boids)
     {
         Vector3 desired = Vector3.zero;
 
@@ -218,7 +222,7 @@ public abstract class AiAgent : MonoBehaviour
         if(_fsm.CurrentState() != StatesEnum.Fight && _fsm.CurrentState() != StatesEnum.Escape)
         {
             GetClosestEnemy();
-            _fsm.ChangeState(StatesEnum.Fight, GetCurrentEnemy());
+            _fsm.ChangeState(StatesEnum.Fight, GetCurrentEnemy(), _isLeader);
         }
     }
 
@@ -227,7 +231,7 @@ public abstract class AiAgent : MonoBehaviour
         _injured = true;
         _viewComponent.InjuredMode(_injured);
 
-        _fsm.ChangeState(StatesEnum.Escape);
+        _fsm.ChangeState(StatesEnum.Escape, _isLeader);
     }
 
     public void OnPunch()

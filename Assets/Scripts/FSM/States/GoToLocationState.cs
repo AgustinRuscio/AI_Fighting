@@ -35,7 +35,7 @@ public class GoToLocationState : States
         Debug.Log(_aiAgent.name + " Entro a Go to location");
 
         if (!Tools.InLineOfSight(_agentPosition.position, _target, _obstaclesMask))
-            finiteStateMach.ChangeState(StatesEnum.PathFinding, _target);
+            finiteStateMach.ChangeState(StatesEnum.PathFinding, _target, true);
         
     }
 
@@ -51,7 +51,7 @@ public class GoToLocationState : States
         if (_aiAgent.GetClosestEnemy() != Vector3.zero)
         {
             if (Tools.FieldOfView(_aiAgent.transform.position, _aiAgent.transform.forward, _aiAgent.GetClosestEnemy(), _aiAgent._viewRadius, _aiAgent._viewAngle, _enemyMask))
-                finiteStateMach.ChangeState(StatesEnum.Fight, _aiAgent.GetCurrentEnemy());
+                finiteStateMach.ChangeState(StatesEnum.Fight, _aiAgent.GetCurrentEnemy(), true);
         }
 
         _aiAgent.ApplyForce(_aiAgent.Seek(_target));
