@@ -27,9 +27,8 @@ public class EscapeState : States
     public override void OnStart(params object[] parameters)
     {
         _isLeader = (bool)parameters[0];
-
-        Debug.Log(_agent.name + "Entro en Escape");
-        _escapeDirection = new Vector3(Random.Range(-36, 21), 0, Random.Range(-35, 22));
+        
+        _escapeDirection = new Vector3(Random.Range(-15, 45), 0, Random.Range(-37, 19));
     }
 
     public override void OnStop()

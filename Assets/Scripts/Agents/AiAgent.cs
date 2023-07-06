@@ -32,7 +32,7 @@ public abstract class AiAgent : MonoBehaviour
 
     protected float _coolDown;
 
-    private bool _alive = true;
+    protected bool _alive = true;
 
     private bool _injured = true;
 
@@ -70,7 +70,7 @@ public abstract class AiAgent : MonoBehaviour
     public float _viewRadius;
 
     [HideInInspector]
-    public float _viewAngle = 90;
+    public float _viewAngle = 130;
 
     [SerializeField]
     private float _obstacleAvoidanceMultiplayer;
@@ -248,6 +248,10 @@ public abstract class AiAgent : MonoBehaviour
     {
         _alive = false;
         _viewComponent.Death();
+
+        GameManager.instance.RemoveAgent(_team);
+
+        _fsm.ChangeState(StatesEnum.Death);
     }
 
     public float GetLife() => _life;

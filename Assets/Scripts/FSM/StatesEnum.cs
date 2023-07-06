@@ -11,5 +11,5 @@ public enum StatesEnum
     Fight,
     Escape,
     Idle,
-    LeaderFollowing
+    Death
 }

@@ -17,13 +17,17 @@ public class BoidAgent : AiAgent, IBoid
         _fsm.AddState(StatesEnum.PathFinding, new PathfindingState(this).SetLayers(_nodeMask, _wallMask, _enemiesMask));
         _fsm.AddState(StatesEnum.Fight, new FightState().SetAgent(this).SetLayers(_enemiesMask));
         _fsm.AddState(StatesEnum.Escape, new EscapeState().SetAgent(this).SetLayer(_wallMask));
+        _fsm.AddState(StatesEnum.Death, new DeathState(this));
     }
 
     override protected void Update()
     {
-        base.Update();
+        if (_alive)
+        {
+            base.Update();
 
-        _fsm.Update();
+            _fsm.Update();
+        }
     }
 
     public void AddBoidToHash()=> GameManager.instance.AddBoid(this);

@@ -11,35 +11,39 @@ public class Leader : AiAgent
         _fsm.AddState(StatesEnum.PathFinding, new PathfindingState(this).SetLayers(_nodeMask,_wallMask, _enemiesMask));
         _fsm.AddState(StatesEnum.Fight, new FightState().SetAgent(this).SetLayers(_enemiesMask));
         _fsm.AddState(StatesEnum.Escape, new EscapeState().SetAgent(this).SetLayer(_wallMask));
+        _fsm.AddState(StatesEnum.Death, new DeathState(this));
     }
 
     protected override void Update()
     {
-        base.Update();
+        if (_alive) 
+        { 
+            base.Update();
+        
+            _fsm.Update();
 
-        _fsm.Update();
-
-        if (Input.GetMouseButtonDown(0) && IsAlive() &&_team == TeamEnum.RedTeam)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit))
+            if (Input.GetMouseButtonDown(0) && IsAlive() &&_team == TeamEnum.RedTeam)
             {
-                if (hit.collider.CompareTag("Floor"))
-                    _fsm.ChangeState(StatesEnum.GoToLocation, hit.point);
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit))
+                {
+                    if (hit.collider.CompareTag("Floor"))
+                        _fsm.ChangeState(StatesEnum.GoToLocation, hit.point);
+                }
             }
-        }
 
-        if (Input.GetMouseButtonDown(1) && IsAlive() && _team == TeamEnum.BlueTeam)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit))
+            if (Input.GetMouseButtonDown(1) && IsAlive() && _team == TeamEnum.BlueTeam)
             {
-                if (hit.collider.CompareTag("Floor"))
-                    _fsm.ChangeState(StatesEnum.GoToLocation, hit.point);
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit))
+                {
+                    if (hit.collider.CompareTag("Floor"))
+                        _fsm.ChangeState(StatesEnum.GoToLocation, hit.point);
+                }
             }
         }
     }

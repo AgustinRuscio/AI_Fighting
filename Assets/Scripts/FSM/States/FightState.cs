@@ -47,7 +47,6 @@ public class FightState : States
         if (Vector3.Distance(_agent.transform.position, _enemy.transform.position) < 1)
         {
             _agent.StopMovement();
-
             _agent.transform.forward = _enemy.transform.position - _agent.transform.position;
 
             if (_agent._timer.CheckCoolDown())
@@ -55,6 +54,7 @@ public class FightState : States
             
         }
 
+        _agent.Separation(GameManager.instance.allBoids);
 
         if (!_enemy.IsAlive())
         {
@@ -64,12 +64,12 @@ public class FightState : States
             finiteStateMach.ChangeState(StatesEnum.GoToLocation);
         }
 
-        if (!Tools.FieldOfView(_agent.transform.position, _agent.transform.forward, _agent.GetClosestEnemy(), _agent._viewRadius, _agent._viewAngle, _enemyMask))
-        {
-            if (_isLeader)
-                finiteStateMach.ChangeState(StatesEnum.Idle);
-            else
-                finiteStateMach.ChangeState(StatesEnum.GoToLocation);
-        }
+        //if (!Tools.FieldOfView(_agent.transform.position, _agent.transform.forward, _agent.GetClosestEnemy(), _agent._viewRadius, _agent._viewAngle, _enemyMask))
+        //{
+        //    if (_isLeader)
+        //        finiteStateMach.ChangeState(StatesEnum.Idle);
+        //    else
+        //        finiteStateMach.ChangeState(StatesEnum.GoToLocation);
+        //}
     }
 }
