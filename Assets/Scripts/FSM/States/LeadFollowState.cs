@@ -46,7 +46,11 @@ public class LeadFollowState : States
 
     public override void Update()
     {
-        if(Vector3.Distance(_leaderPosition, _boideAgent.GetLeaderPosition()) > 3)
+        if (_agent.WinCheck())
+            finiteStateMach.ChangeState(StatesEnum.Dance, false);
+        
+
+        if (Vector3.Distance(_leaderPosition, _boideAgent.GetLeaderPosition()) > 3)
             _leaderPosition = _boideAgent.GetLeaderPosition();
 
         if (_agent.GetClosestEnemy() != Vector3.zero)
@@ -56,13 +60,15 @@ public class LeadFollowState : States
         }
 
         if (!Tools.InLineOfSight(_agent.transform.position, _leaderPosition, _obstacleLayer))
-            finiteStateMach.ChangeState(StatesEnum.PathFinding, _leaderPosition, false);
+            finiteStateMach.ChangeState(StatesEnum.PathFinding, _leaderPosition, false, false);
 
 
         if (Vector3.Distance(_agent.transform.position, _leaderPosition) < 3)
         {
             Debug.Log("Im too close");
+            Vector3 lastFwd = _agent.transform.forward;
             _agent.StopMovement();
+            _agent.transform.forward = lastFwd;
         }
         else
             _agent.ApplyForce(_agent.LeaderFollowing(_leaderPosition, GameManager.instance.allBoids));

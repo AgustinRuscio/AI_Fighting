@@ -35,7 +35,7 @@ public class GoToLocationState : States
         Debug.Log(_aiAgent.name + " Entro a Go to location");
 
         if (!Tools.InLineOfSight(_agentPosition.position, _target, _obstaclesMask))
-            finiteStateMach.ChangeState(StatesEnum.PathFinding, _target, true);
+            finiteStateMach.ChangeState(StatesEnum.PathFinding, _target, true, false);
         
     }
 

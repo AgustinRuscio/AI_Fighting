@@ -9,20 +9,22 @@ public class BoidAgent : AiAgent, IBoid
     [SerializeField]
     private Transform _leaderTransform;
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
+
         AddBoidToHash();
 
         _fsm.AddState(StatesEnum.GoToLocation, new LeadFollowState().SetLayers(_wallMask, _enemiesMask).SetLeaderTransform(_leaderTransform).SetAget(this, this));
         _fsm.AddState(StatesEnum.PathFinding, new PathfindingState(this).SetLayers(_nodeMask, _wallMask, _enemiesMask));
         _fsm.AddState(StatesEnum.Fight, new FightState().SetAgent(this).SetLayers(_enemiesMask));
         _fsm.AddState(StatesEnum.Escape, new EscapeState().SetAgent(this).SetLayer(_wallMask));
-        _fsm.AddState(StatesEnum.Death, new DeathState(this));
+        _fsm.AddState(StatesEnum.Dance, new DanceState().SetAgent(this));
     }
 
     override protected void Update()
     {
-        if (_alive)
+        if (_alive && !_defeat)
         {
             base.Update();
 

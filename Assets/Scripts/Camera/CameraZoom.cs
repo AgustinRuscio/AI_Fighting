@@ -19,7 +19,7 @@ public class CameraZoom : MonoBehaviour
 
     private void Zoom()
     {
-        if (!GameManager.instance.SimulationOn()) return;
+        //if (!GameManager.instance.SimulationOn()) return;
 
         if (Input.GetKey(KeyCode.W))
         {

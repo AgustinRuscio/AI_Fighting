@@ -6,6 +6,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 public abstract class AiAgent : MonoBehaviour
 {
@@ -23,18 +24,29 @@ public abstract class AiAgent : MonoBehaviour
     protected TeamEnum _team;
 
     [SerializeField]
+    private int _danceIndex;
+
+    private int death = 0;
+
+    [SerializeField]
     private bool _isLeader;
 
     [Header("Fight Atributs")]
 
-    [SerializeField]
     protected float _life;
+
+    [SerializeField]
+    protected float _maxLife;
 
     protected float _coolDown;
 
     protected bool _alive = true;
 
-    private bool _injured = true;
+    private bool _injured = false;
+
+    private bool _win = false;
+
+    protected bool _defeat = false;
 
     [SerializeField]
     private Slider _healthBar;
@@ -70,7 +82,7 @@ public abstract class AiAgent : MonoBehaviour
     public float _viewRadius;
 
     [HideInInspector]
-    public float _viewAngle = 130;
+    public float _viewAngle = 90;
 
     [SerializeField]
     private float _obstacleAvoidanceMultiplayer;
@@ -96,25 +108,32 @@ public abstract class AiAgent : MonoBehaviour
 
     [SerializeField]
     protected LayerMask _avoidanceMask;
-
+    
 
     private void Awake()
     {
+        EventManager.Subscribe(EventEnum.Win, WinDance);
+        EventManager.Subscribe(EventEnum.LeaderDeath, LeaderDeath);
+        _life = _maxLife;
         _coolDown = Random.Range(1.5f, 4);
 
         _timer = new GenericTimer(_coolDown);
         _viewComponent = new AgentView(_animator, _healthBar);
 
-        _viewComponent.UpdateHud(_life);
+        _viewComponent.UpdateHud(_life, _maxLife);
     }
+
+    protected virtual void Start() => GameManager.instance.AddAgent(_team, this);
     
 
     protected virtual void Update() 
     {
         Move();
-        _timer.RunTimer();
         ObstacleAvoidanceLogic();
+
         _viewComponent.Movement(_velocity.magnitude);
+
+        _timer.RunTimer();
     }
 
     #region STEERING_BEHAVIOR
@@ -122,6 +141,7 @@ public abstract class AiAgent : MonoBehaviour
     public void Move()
     {
         transform.position += _velocity * Time.deltaTime;
+        if(_velocity != Vector3.zero)
         transform.forward = _velocity;
     }
 
@@ -200,6 +220,7 @@ public abstract class AiAgent : MonoBehaviour
     }
 
     public void StopMovement() => _velocity = Vector3.zero;
+    
 
     public Vector3 InvertDirection() => -_velocity;
     
@@ -207,23 +228,69 @@ public abstract class AiAgent : MonoBehaviour
     #endregion
 
     public bool IsAlive() => _alive;
+
     public void TakeDamage(float damage)
     {
         _life -= damage;
 
-        _viewComponent.UpdateHud(_life);
+        _viewComponent.UpdateHud(_life,_maxLife);
+        _viewComponent.GetHit();
 
         if (_life <= 20)
             InjuredMode();
 
         if(_life <= 0)
-            Death();
+            SetDeath();
 
         if(_fsm.CurrentState() != StatesEnum.Fight && _fsm.CurrentState() != StatesEnum.Escape)
         {
             GetClosestEnemy();
             _fsm.ChangeState(StatesEnum.Fight, GetCurrentEnemy(), _isLeader);
         }
+    }
+
+    private void WinDance(params object[] parameters)
+    {
+        if (_team == (TeamEnum)parameters[0])
+        {
+            _win = true;
+            _fsm.ChangeState(StatesEnum.Dance, _isLeader);
+        }
+    }
+
+    public bool WinCheck() => _win;
+
+    public void SetDanceMode() => _viewComponent.WinDance(_danceIndex);
+    
+    private void LeaderDeath(params object[] parametes)
+    {
+        if(_team == (TeamEnum)parametes[0])
+        {
+            _defeat = true;
+            StopMovement();
+            Debug.Log("a");
+            _viewComponent.LoseMode();
+        }
+    }
+
+    public void SetDeath()
+    {
+        if(death == 0)
+        {
+            if (_isLeader)
+                EventManager.Trigger(EventEnum.LeaderDeath, _team);
+            
+
+            Debug.Log(name + " Died");
+
+            _alive = false;
+            _viewComponent.Death();
+            StopMovement();
+            GameManager.instance.RemoveAgent(_team, this);
+            death++;
+        }
+
+
     }
 
     private void InjuredMode()
@@ -234,25 +301,11 @@ public abstract class AiAgent : MonoBehaviour
         _fsm.ChangeState(StatesEnum.Escape, _isLeader);
     }
 
-    public void OnPunch()
-    {
-        _punchArea.SetActive(true);
-    }
+    public void OnPunch() => _punchArea.SetActive(true);
+    
 
-    public void OffPunch()
-    {
-        _punchArea.SetActive(false);
-    }
-
-    public void Death()
-    {
-        _alive = false;
-        _viewComponent.Death();
-
-        GameManager.instance.RemoveAgent(_team);
-
-        _fsm.ChangeState(StatesEnum.Death);
-    }
+    public void OffPunch() => _punchArea.SetActive(false);
+    
 
     public float GetLife() => _life;
 
@@ -287,11 +340,11 @@ public abstract class AiAgent : MonoBehaviour
         {
             if (enemies[i] == transform.gameObject.GetComponent<Collider>()) continue;
 
-            if (!Tools.InLineOfSight(transform.position, enemies[i].transform.position, _wallMask)) continue;
-
             var currentCheck = enemies[i].gameObject.GetComponent<AiAgent>();
 
             if (currentCheck ==  null) continue;
+
+            if (!Tools.InLineOfSight(transform.position, enemies[i].transform.position, _wallMask)) continue;
             
             if(!currentCheck.IsAlive()) continue;
 
@@ -302,7 +355,7 @@ public abstract class AiAgent : MonoBehaviour
             if (Vector3.Distance(transform.position, enemies[i].transform.position) < dist)
             {
                 closestEnemy = enemies[i].transform.position;
-                dist = closestEnemy.magnitude;
+                dist = Vector3.Distance(transform.position, enemies[i].transform.position);
                 _currentEnemy = currentCheck;
             }
         }
@@ -313,6 +366,13 @@ public abstract class AiAgent : MonoBehaviour
     }
 
     public AiAgent GetCurrentEnemy() => _currentEnemy;
+
+    private void OnDestroy() 
+    { 
+        EventManager.Unsubscribe(EventEnum.Win, WinDance);
+
+        EventManager.Unsubscribe(EventEnum.LeaderDeath, LeaderDeath);
+    } 
     
 
     #region DrawGizmos

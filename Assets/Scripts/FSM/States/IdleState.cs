@@ -27,7 +27,9 @@ public class IdleState : States
     public override void OnStart(params object[] parameters)
     {
         Debug.Log(_agent.name + " Entro al Idle");
+        Vector3 lastFwd = _agent.transform.forward;
         _agent.StopMovement();
+        _agent.transform.forward = lastFwd;
     }
 
     public override void OnStop()

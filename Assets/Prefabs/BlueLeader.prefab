@@ -2314,6 +2314,7 @@ MonoBehaviour:
   GizmosActivated: 1
   _animator: {fileID: 3551437751670478133}
   _team: 1
+  _danceIndex: 0
   _isLeader: 1
   _life: 100
   _healthBar: {fileID: 2864840714471315102}

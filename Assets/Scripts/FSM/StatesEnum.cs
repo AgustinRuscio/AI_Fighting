@@ -11,5 +11,6 @@ public enum StatesEnum
     Fight,
     Escape,
     Idle,
-    Death
+    Death,
+    Dance
 }

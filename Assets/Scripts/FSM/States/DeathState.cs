@@ -14,6 +14,8 @@ public class DeathState : States
     public override void OnStart(params object[] parameters)
     {
         _agent.StopMovement();
+
+        
     }
 
     public override void OnStop() { }

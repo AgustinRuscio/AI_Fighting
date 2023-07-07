@@ -2559,8 +2559,9 @@ MonoBehaviour:
   GizmosActivated: 1
   _animator: {fileID: 1709032321}
   _team: 0
+  _danceIndex: 1
   _isLeader: 1
-  _life: 100
+  _maxLife: 250
   _healthBar: {fileID: 1623768265920954410}
   _punchArea: {fileID: 1968917194}
   _maxForce: 5
@@ -2576,12 +2577,12 @@ MonoBehaviour:
     m_Bits: 2048
   _viewRadius: 14
   _viewAngle: 90
-  _obstacleAvoidanceMultiplayer: 4
+  _obstacleAvoidanceMultiplayer: 5
   _separationRadius: 1
   _arriveRadius: 1
   _separationMultiplayer: 1
   _offset: {x: 1, y: 0, z: 1}
-  _avoidanceRadius: 4
+  _avoidanceRadius: 2.5
   _avoidanceMask:
     serializedVersion: 2
     m_Bits: 1024

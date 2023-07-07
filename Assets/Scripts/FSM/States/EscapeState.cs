@@ -38,8 +38,12 @@ public class EscapeState : States
 
     public override void Update()
     {
+        if (_agent.WinCheck())
+            finiteStateMach.ChangeState(StatesEnum.Dance, _isLeader);
+        
+
         if (!Tools.InLineOfSight(_agent.transform.position, _escapeDirection, _obstacleMask))
-            finiteStateMach.ChangeState(StatesEnum.PathFinding, _escapeDirection, _isLeader);
+            finiteStateMach.ChangeState(StatesEnum.PathFinding, _escapeDirection, _isLeader, false);
         
         _agent.ApplyForce(_agent.Seek(_escapeDirection));
 
