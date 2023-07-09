@@ -12,6 +12,7 @@ public class LeadFollowState : States
     private LayerMask _obstacleLayer;
     private LayerMask _enemyMask;
 
+
     public LeadFollowState SetAget(AiAgent agent,BoidAgent boid)
     {
         _agent = agent;
@@ -63,7 +64,7 @@ public class LeadFollowState : States
             finiteStateMach.ChangeState(StatesEnum.PathFinding, _leaderPosition, false, false);
 
 
-        if (Vector3.Distance(_agent.transform.position, _leaderPosition) < 3)
+        if (Vector3.Distance(_agent.transform.position, _leaderPosition) < _boideAgent._leaderMaxDistance)
         {
             Debug.Log("Im too close");
             Vector3 lastFwd = _agent.transform.forward;
@@ -73,6 +74,6 @@ public class LeadFollowState : States
         else
             _agent.ApplyForce(_agent.LeaderFollowing(_leaderPosition, GameManager.instance.allBoids));
 
-            _agent.ApplyForce(_agent.Separation(GameManager.instance.allBoids));
+            _agent.ApplyForce(_agent.Separation(GameManager.instance.allBoids) * _agent._separationRadius);
     }
 }

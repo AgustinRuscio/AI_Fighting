@@ -43,6 +43,7 @@ public class FightState : States
     public override void Update()
     {
         _agent.ApplyForce(_agent.Seek(_enemy.transform.position));
+        
 
         if (Vector3.Distance(_agent.transform.position, _enemy.transform.position) < 1)
         {
@@ -63,9 +64,9 @@ public class FightState : States
             else
             {
                 if (_isLeader)
-                finiteStateMach.ChangeState(StatesEnum.Idle);
+                    finiteStateMach.ChangeState(StatesEnum.Idle);
                 else
-                finiteStateMach.ChangeState(StatesEnum.GoToLocation);
+                    finiteStateMach.ChangeState(StatesEnum.GoToLocation);
             }
         }
 

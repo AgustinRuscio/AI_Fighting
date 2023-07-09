@@ -51,6 +51,8 @@ public class PathfindingState : States
 
         _parameterPos = (Vector3)parameters[0];
 
+        Debug.Log(_parameterPos);
+
         _isLeader = (bool)parameters[1];
         _cameFromDancing = (bool)parameters[2];
 
@@ -107,7 +109,7 @@ public class PathfindingState : States
         }
         
 
-        if (Tools.InLineOfSight(_agent.transform.position, goalNode.transform.position, _obstacleMask) && _isLeader && !_cameFromDancing)
+        if (Tools.InLineOfSight(_agent.transform.position, goalNode.transform.position, _obstacleMask) && !_cameFromDancing)
             finiteStateMach.ChangeState(StatesEnum.GoToLocation, _parameterPos);
 
         if (_path.Count > 0)
@@ -138,6 +140,9 @@ public class PathfindingState : States
                     finiteStateMach.ChangeState(StatesEnum.GoToLocation);
             }
         }
+
+        if(!_isLeader)
+            _agent.ApplyForce(_agent.Separation(GameManager.instance.allBoids) * _agent._separationRadius);
     }
 
     private void MovethroughNodes()

@@ -2556,15 +2556,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 463c2a70ddb08274f8c8a1f05d88a589, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GizmosActivated: 1
+  GizmosActivated: 0
   _animator: {fileID: 1709032321}
   _team: 0
   _danceIndex: 1
   _isLeader: 1
-  _maxLife: 250
+  _maxLife: 500
   _healthBar: {fileID: 1623768265920954410}
   _punchArea: {fileID: 1968917194}
-  _maxForce: 5
+  _maxForce: 6
   _speed: 5
   _nodeMask:
     serializedVersion: 2

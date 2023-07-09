@@ -28,7 +28,8 @@ public class EscapeState : States
     {
         _isLeader = (bool)parameters[0];
         
-        _escapeDirection = new Vector3(Random.Range(-15, 45), 0, Random.Range(-37, 19));
+        _escapeDirection = new Vector3(Random.Range(-17, 8), 0, Random.Range(-29f, 8f));
+        Debug.Log(_escapeDirection);
     }
 
     public override void OnStop()
@@ -46,8 +47,9 @@ public class EscapeState : States
             finiteStateMach.ChangeState(StatesEnum.PathFinding, _escapeDirection, _isLeader, false);
         
         _agent.ApplyForce(_agent.Seek(_escapeDirection));
+        _agent.ApplyForce(_agent.Separation(GameManager.instance.allBoids) * _agent._separationRadius);
 
-        if(Vector3.Distance(_agent.transform.position, _escapeDirection) <= 1)
+        if (Vector3.Distance(_agent.transform.position, _escapeDirection) <= 1)
         {
             if (_isLeader)
                 finiteStateMach.ChangeState(StatesEnum.Idle);

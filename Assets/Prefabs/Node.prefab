@@ -111,11 +111,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cost: 1
-  _neighborRadius: 20
+  _neighborRadius: 7.05
   _nodeMask:
     serializedVersion: 2
     m_Bits: 512
   _obstableMask:
     serializedVersion: 2
     m_Bits: 256
-  GizmosActivated: 1
+  GizmosActivated: 0

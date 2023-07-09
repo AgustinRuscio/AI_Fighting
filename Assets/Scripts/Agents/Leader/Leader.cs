@@ -2,8 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Leader : AiAgent
+public class Leader : AiAgent, IBoid
 {
+    public void AddBoidToHash()
+    {
+        GameManager.instance.AddBoid(this);
+    }
+
+    public Vector3 GetBoidPosition()
+    {
+        return transform.position;
+    }
+
     protected override void Start()
     {
         base.Start();

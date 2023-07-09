@@ -9,6 +9,8 @@ public class BoidAgent : AiAgent, IBoid
     [SerializeField]
     private Transform _leaderTransform;
 
+    public float _leaderMaxDistance;
+
     protected override void Start()
     {
         base.Start();
@@ -35,12 +37,4 @@ public class BoidAgent : AiAgent, IBoid
     public void AddBoidToHash()=> GameManager.instance.AddBoid(this);
 
     public Vector3 GetLeaderPosition() => _leaderTransform.position;
-    
-
-    protected override void OnDrawGizmos()
-    {
-        base.OnDrawGizmos();
-        Gizmos.DrawWireSphere(transform.position, _arriveRadius);
-        Gizmos.DrawWireSphere(transform.position, _separationRadius);
-    }
 }

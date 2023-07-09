@@ -89,8 +89,8 @@ public abstract class AiAgent : MonoBehaviour
 
     [Header("Flocking")]
 
-    [SerializeField]
-    protected float _separationRadius;
+    
+    public float _separationRadius;
 
     [SerializeField]
     protected float _arriveRadius;
@@ -313,12 +313,14 @@ public abstract class AiAgent : MonoBehaviour
     {
         if (Physics.Raycast((transform.position + new Vector3(0, 1, 0)) + transform.right / 2, transform.forward, _avoidanceRadius, _avoidanceMask))
         {
-            ApplyForce(CalculateSteering(-transform.right * _speed) * _obstacleAvoidanceMultiplayer);
+            if(_velocity!= Vector3.zero)
+                ApplyForce(CalculateSteering(-transform.right * _speed) * _obstacleAvoidanceMultiplayer);
             //Debug.Log("Obstacle R");
         }
         else if (Physics.Raycast((transform.position + Vector3.up) - transform.right / 2, transform.forward, _avoidanceRadius, _avoidanceMask))
         {
-            ApplyForce(CalculateSteering(transform.right * _speed) * _obstacleAvoidanceMultiplayer);
+            if (_velocity != Vector3.zero)
+                ApplyForce(CalculateSteering(transform.right * _speed) * _obstacleAvoidanceMultiplayer);
             //Debug.Log("Obstacle L");
         }
             //Debug.Log("No Obstacle");

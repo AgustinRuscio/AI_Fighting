@@ -36,7 +36,6 @@ public class GoToLocationState : States
 
         if (!Tools.InLineOfSight(_agentPosition.position, _target, _obstaclesMask))
             finiteStateMach.ChangeState(StatesEnum.PathFinding, _target, true, false);
-        
     }
 
     public override void OnStop()

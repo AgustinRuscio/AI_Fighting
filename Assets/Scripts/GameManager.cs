@@ -27,14 +27,17 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private AudioClip[] _winMusic;
 
-    private AudioSource _audioSource;
+    private AudioSource _winMusicAudioSource;
+
+    [SerializeField]
+    private AudioSource _musicAudioSource;
 
     private void Awake()
     {
         if (instance == null) instance = this;
         else Destroy(gameObject);
 
-        _audioSource = GetComponent<AudioSource>();
+        _winMusicAudioSource = GetComponent<AudioSource>();
 
         EventManager.Subscribe(EventEnum.LeaderDeath, LeaderDeathcondition);
     }
@@ -81,9 +84,11 @@ public class GameManager : MonoBehaviour
 
         int randomMusicIndex = Random.Range(0, _winMusic.Length - 1);
 
-        _audioSource.clip = _winMusic[randomMusicIndex];
+        _musicAudioSource.Stop();
 
-        _audioSource.Play();
+        _winMusicAudioSource.clip = _winMusic[randomMusicIndex];
+
+        _winMusicAudioSource.Play();
 
         _winCondition.text = "Leader defeated";
 
@@ -108,11 +113,13 @@ public class GameManager : MonoBehaviour
     {
         _simulation = false;
 
-        int randomMusicIndex = Random.Range(0, _winMusic.Length-1);
+        int randomMusicIndex = Random.Range(0, _winMusic.Length);
 
-        _audioSource.clip = _winMusic[randomMusicIndex];
+        _musicAudioSource.Stop();
 
-        _audioSource.Play();
+        _winMusicAudioSource.clip = _winMusic[randomMusicIndex];
+
+        _winMusicAudioSource.Play();
 
         StartCoroutine(wait());
     }
