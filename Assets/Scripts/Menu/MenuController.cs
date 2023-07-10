@@ -1,5 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+//------------------------------//
+//     Made by Agustin Ruscio   //
+//------------------------------//
+
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

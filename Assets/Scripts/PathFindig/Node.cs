@@ -1,6 +1,6 @@
-//--------------------------------------------
-//          Agustin Ruscio & Merdeces Riego
-//--------------------------------------------
+//------------------------------//
+//     Made by Agustin Ruscio   //
+//------------------------------//
 
 
 using System.Collections.Generic;
@@ -50,7 +50,6 @@ public class Node : MonoBehaviour
         if (GizmosActivated)
         {
             Gizmos.color = Color.yellow;
-
             Gizmos.DrawWireSphere(transform.position, _neighborRadius);
         }
     }

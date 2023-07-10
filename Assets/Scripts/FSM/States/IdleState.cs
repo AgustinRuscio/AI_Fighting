@@ -1,5 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+//------------------------------//
+//     Made by Agustin Ruscio   //
+//------------------------------//
+
+
 using UnityEngine;
 
 public class IdleState : States
@@ -17,6 +20,7 @@ public class IdleState : States
 
         return this;
     }
+
     public IdleState SetLayer(LayerMask enemiesLayer)
     {
         _enemyMask = enemiesLayer;
@@ -32,10 +36,8 @@ public class IdleState : States
         _agent.transform.forward = lastFwd;
     }
 
-    public override void OnStop()
-    {
-        Debug.Log(_agent.name + " salio del Idle");
-    }
+    public override void OnStop() => Debug.Log(_agent.name + " salio del Idle");
+    
 
     public override void Update() 
     {

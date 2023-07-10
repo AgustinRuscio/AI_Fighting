@@ -1,5 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
+//------------------------------//
+//     Made by Agustin Ruscio   //
+//------------------------------//
+
+
+
 using UnityEngine;
 
 public class BoidAgent : AiAgent, IBoid
@@ -17,7 +21,7 @@ public class BoidAgent : AiAgent, IBoid
 
         AddBoidToHash();
 
-        _fsm.AddState(StatesEnum.GoToLocation, new LeadFollowState().SetLayers(_wallMask, _enemiesMask).SetLeaderTransform(_leaderTransform).SetAget(this, this));
+        _fsm.AddState(StatesEnum.GoToLocation, new LeadFollowState().SetLayers(_wallMask, _enemiesMask).SetAget(this, this));
         _fsm.AddState(StatesEnum.PathFinding, new PathfindingState(this).SetLayers(_nodeMask, _wallMask, _enemiesMask));
         _fsm.AddState(StatesEnum.Fight, new FightState().SetAgent(this).SetLayers(_enemiesMask));
         _fsm.AddState(StatesEnum.Escape, new EscapeState().SetAgent(this).SetLayer(_wallMask));

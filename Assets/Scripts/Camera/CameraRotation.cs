@@ -1,5 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+//------------------------------//
+//     Made by Agustin Ruscio   //
+//------------------------------//
+
+
 using UnityEngine;
 
 public class CameraRotation : MonoBehaviour
@@ -9,11 +12,8 @@ public class CameraRotation : MonoBehaviour
 
     void Update() => MoveCamera();
 
-
     private void MoveCamera()
     {
-        //if (!GameManager.instance.SimulationOn()) return;
-
         if (Input.GetKey(KeyCode.D))
             transform.Rotate(0, cameraSpeed * Time.deltaTime * -1, 0);
         else if (Input.GetKey(KeyCode.A))

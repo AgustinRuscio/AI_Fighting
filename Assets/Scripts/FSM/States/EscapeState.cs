@@ -1,5 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+//------------------------------//
+//     Made by Agustin Ruscio   //
+//------------------------------//
+
+
 using UnityEngine;
 
 public class EscapeState : States
@@ -17,12 +20,12 @@ public class EscapeState : States
         _agent = agent;
         return this;
     }
+
     public EscapeState SetLayer(LayerMask obstacleLayer)
     {
         _obstacleMask = obstacleLayer;
         return this;
     }
-
 
     public override void OnStart(params object[] parameters)
     {
@@ -32,10 +35,8 @@ public class EscapeState : States
         Debug.Log(_escapeDirection);
     }
 
-    public override void OnStop()
-    {
-        Debug.Log(_agent.name + "Salgo del Escape");
-    }
+    public override void OnStop() => Debug.Log(_agent.name + "Salgo del Escape");
+    
 
     public override void Update()
     {

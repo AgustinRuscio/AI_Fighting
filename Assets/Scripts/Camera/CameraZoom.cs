@@ -1,5 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+//------------------------------//
+//     Made by Agustin Ruscio   //
+//------------------------------//
+
+
 using UnityEngine;
 
 public class CameraZoom : MonoBehaviour
@@ -19,8 +22,6 @@ public class CameraZoom : MonoBehaviour
 
     private void Zoom()
     {
-        //if (!GameManager.instance.SimulationOn()) return;
-
         if (Input.GetKey(KeyCode.W))
         {
             float distanceToTarget = Vector3.Distance(transform.position, targetPoint.position);

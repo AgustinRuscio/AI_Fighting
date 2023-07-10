@@ -1,5 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+//------------------------------//
+//     Made by Agustin Ruscio   //
+//------------------------------//
+
+
 using UnityEngine;
 
 public class LeadFollowState : States
@@ -19,11 +22,7 @@ public class LeadFollowState : States
         _boideAgent = boid;
         return this;
     }
-    public LeadFollowState SetLeaderTransform(Transform leaderPosition)
-    {
-        //_leaderPosition = leaderPosition.position;
-        return this;
-    }
+
     public LeadFollowState SetLayers(LayerMask obstacleLayer, LayerMask enemyLayer)
     {
         _obstacleLayer = obstacleLayer;
@@ -39,11 +38,8 @@ public class LeadFollowState : States
         _leaderPosition = _boideAgent.GetLeaderPosition();
     }
 
-    public override void OnStop()
-    {
-        Debug.Log("Salgo LeadFollow");
+    public override void OnStop() => Debug.Log("Salgo LeadFollow");
 
-    }
 
     public override void Update()
     {

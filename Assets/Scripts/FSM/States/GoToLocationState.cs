@@ -1,5 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+//------------------------------//
+//     Made by Agustin Ruscio   //
+//------------------------------//
+
+
 using UnityEngine;
 
 public class GoToLocationState : States
@@ -42,8 +45,6 @@ public class GoToLocationState : States
     {
         Debug.Log(_aiAgent.name + " Salio a Go to location");
     }
-
-
 
     public override void Update()
     {

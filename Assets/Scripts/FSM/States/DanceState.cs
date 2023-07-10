@@ -1,5 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+//------------------------------//
+//     Made by Agustin Ruscio   //
+//------------------------------//
+
+
 using UnityEngine;
 
 public class DanceState : States
@@ -31,6 +34,5 @@ public class DanceState : States
             agent.SetDanceMode();
             ondeDance = 1;
         }
-        
     }
 }

@@ -1,12 +1,11 @@
-//-------------------------
-//          Agustin Ruscio
-//-------------------------
+//------------------------------//
+//     Made by Agustin Ruscio   //
+//------------------------------//
 
 
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using Unity.VisualScripting;
 
 public abstract class AiAgent : MonoBehaviour
 {
@@ -270,7 +269,6 @@ public abstract class AiAgent : MonoBehaviour
         {
             _defeat = true;
             StopMovement();
-            Debug.Log("a");
             _viewComponent.LoseMode();
         }
     }
@@ -281,9 +279,6 @@ public abstract class AiAgent : MonoBehaviour
         {
             if (_isLeader)
                 EventManager.Trigger(EventEnum.LeaderDeath, _team);
-            
-
-            Debug.Log(name + " Died");
 
             _alive = false;
             _viewComponent.Death();
@@ -291,8 +286,6 @@ public abstract class AiAgent : MonoBehaviour
             GameManager.instance.RemoveAgent(_team, this);
             death++;
         }
-
-
     }
 
     private void InjuredMode()
@@ -318,15 +311,13 @@ public abstract class AiAgent : MonoBehaviour
             if (_velocity != Vector3.zero)
             {
                 return (CalculateSteering(-transform.right * _speed) * _obstacleAvoidanceMultiplayer);
-                
             }
         }
         else if (Physics.Raycast((transform.position + Vector3.up) - transform.right / 2, transform.forward, _avoidanceRadius, _avoidanceMask))
         {
             if (_velocity != Vector3.zero)
             {
-                return (CalculateSteering(transform.right * _speed) * _obstacleAvoidanceMultiplayer);
-                
+                return (CalculateSteering(transform.right * _speed) * _obstacleAvoidanceMultiplayer);  
             }
         }
 

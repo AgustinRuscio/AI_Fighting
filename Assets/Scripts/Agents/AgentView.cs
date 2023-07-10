@@ -1,3 +1,7 @@
+//------------------------------//
+//     Made by Agustin Ruscio   //
+//------------------------------//
+
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,5 +35,4 @@ public class AgentView
     public void Movement(float move) => _animator.SetFloat("Move", move);
 
     public void UpdateHud(float life, float maxLife) => _slider.value = life / maxLife;
-    
 }
