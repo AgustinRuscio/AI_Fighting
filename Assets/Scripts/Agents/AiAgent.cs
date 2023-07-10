@@ -129,7 +129,9 @@ public abstract class AiAgent : MonoBehaviour
     protected virtual void Update() 
     {
         Move();
-        ObstacleAvoidanceLogic();
+
+        if(ObstacleAvoidanceLogic() != Vector3.zero)
+            ApplyForce(ObstacleAvoidanceLogic());
 
         _viewComponent.Movement(_velocity.magnitude);
 
@@ -309,21 +311,26 @@ public abstract class AiAgent : MonoBehaviour
 
     public float GetLife() => _life;
 
-    protected void ObstacleAvoidanceLogic()
+    protected Vector3 ObstacleAvoidanceLogic()
     {
         if (Physics.Raycast((transform.position + new Vector3(0, 1, 0)) + transform.right / 2, transform.forward, _avoidanceRadius, _avoidanceMask))
         {
-            if(_velocity!= Vector3.zero)
-                ApplyForce(CalculateSteering(-transform.right * _speed) * _obstacleAvoidanceMultiplayer);
-            //Debug.Log("Obstacle R");
+            if (_velocity != Vector3.zero)
+            {
+                return (CalculateSteering(-transform.right * _speed) * _obstacleAvoidanceMultiplayer);
+                
+            }
         }
         else if (Physics.Raycast((transform.position + Vector3.up) - transform.right / 2, transform.forward, _avoidanceRadius, _avoidanceMask))
         {
             if (_velocity != Vector3.zero)
-                ApplyForce(CalculateSteering(transform.right * _speed) * _obstacleAvoidanceMultiplayer);
-            //Debug.Log("Obstacle L");
+            {
+                return (CalculateSteering(transform.right * _speed) * _obstacleAvoidanceMultiplayer);
+                
+            }
         }
-            //Debug.Log("No Obstacle");
+
+        return Vector3.zero;
     }
 
     public TeamEnum GetTeam() => _team;
